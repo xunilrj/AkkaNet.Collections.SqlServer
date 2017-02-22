@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using MachinaAurum.AkkaNet.Collections.SqlServer.Actors;
+using MachinaAurum.Collections.SqlServer;
 using System;
 
 namespace SqlQueueTest
@@ -12,7 +13,7 @@ namespace SqlQueueTest
 
             var consoleActor = system.ActorOf<ConsoleActor>();
 
-            var parameters = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN", "SERVICEDESTINATION", "CONTRACT", "MESSAGETYPE", "QUEUEORIGIN", "QUEUEDESTINATION");
+            var parameters = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN", "SERVICEDESTINATION", "CONTRACT", "MESSAGETYPE", "QUEUEORIGIN", "QUEUEDESTINATION", "QUEUEBAGGAGE");
             var queueActor = system.ActorOf(SqlQueueActor.Props(parameters, consoleActor));
 
             system.WhenTerminated.Wait();

@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
     <metadata>
-        <id>MachinaAurum.Collections.SqlServer</id>
-        <title>MachinaAurum.Collections.SqlServer</title>
-        <description>Implementations of .NET Collections to SQL Server</description>
+        <id>MachinaAurum.AkkaNet.Collections.SqlServer</id>
+        <title>MachinaAurum.AkkaNet.Collections.SqlServer</title>
+        <description>Reader and Writer SqlServer collections Actors in Akka.net </description>
         <version>0.1</version>
         <authors>Daniel Frederico Lins Leite</authors>
         <owners>xunilrj</owners>
         <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-        <projectUrl>https://github.com/xunilrj/Collections.SqlServer</projectUrl>
+        <projectUrl>https://github.com/xunilrj/AkkaNet.Collections.SqlServer</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <tags>collections sql server</tags>
+        <tags>collections sql server akka</tags>
         <dependencies>
         </dependencies>
     </metadata>
     <files>
-        <file src="MachinaAurum.Collections.SqlServer.dll" target="lib\net40\" />
-        <file src="MachinaAurum.Collections.SqlServer.pdb" target="lib\net40\" />
+        <file src="MachinaAurum.AkkaNet.Collections.SqlServer.dll" target="lib\net40\" />
+        <file src="MachinaAurum.AkkaNet.Collections.SqlServer.pdb" target="lib\net40\" />
     </files>
 </package>

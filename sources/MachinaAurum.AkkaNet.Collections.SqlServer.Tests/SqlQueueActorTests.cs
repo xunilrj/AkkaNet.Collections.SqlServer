@@ -1,6 +1,7 @@
 ﻿using Akka.Actor;
 using Akka.TestKit.Xunit2;
 using MachinaAurum.AkkaNet.Collections.SqlServer.Actors;
+using MachinaAurum.Collections.SqlServer;
 using Xunit;
 
 namespace MachinaAurum.AkkaNet.Collections.SqlServer.Tests
@@ -11,7 +12,7 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Tests
         public void MustFowardMessageToItsTarget()
         {
             var testActor = CreateTestProbe("test");
-            var parameters = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN", "SERVICEDESTINATION", "CONTRACT", "MESSAGETYPE", "QUEUEORIGIN", "QUEUEDESTINATION");
+            var parameters = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN", "SERVICEDESTINATION", "CONTRACT", "MESSAGETYPE", "QUEUEORIGIN", "QUEUEDESTINATION", "QUEUEBAGGAGE");
             var queueActor = Sys.ActorOf(SqlQueueActor.Props(parameters, testActor));
 
             testActor.Send(queueActor, 12);
@@ -42,7 +43,7 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Tests
         {
             Target = target;
 
-            var parameters = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN", "SERVICEDESTINATION", "CONTRACT", "MESSAGETYPE", "QUEUEORIGIN", "QUEUEDESTINATION");
+            var parameters = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN", "SERVICEDESTINATION", "CONTRACT", "MESSAGETYPE", "QUEUEORIGIN", "QUEUEDESTINATION", "QUEUEBAGGAGE");
             var queue = Context.ActorOf(SqlQueueActor.Props(parameters));
 
             ReceiveAny(x =>

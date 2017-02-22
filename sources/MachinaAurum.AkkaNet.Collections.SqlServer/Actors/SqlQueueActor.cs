@@ -28,8 +28,8 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
             var system = Context.System;
             var mypath = Context.Self.Path;
 
-            var queue = new SqlQueue(parameters.ConnectionString, parameters.ServiceOrigin, parameters.ServiceDestination, parameters.Contract, parameters.MessageType, parameters.QueueDestination);
-            queue.CreateObjects(parameters.QueueOrigin);
+            var queue = new SqlQueue(parameters);
+            queue.CreateObjects();
 
             Task.Factory.StartNew(async () =>
             {
@@ -56,28 +56,6 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
             {
                 Target.Tell(x);
             });
-        }
-    }
-
-    public class SqlQueueParameters
-    {
-        public string ConnectionString { get; set; }
-        public string ServiceOrigin { get; set; }
-        public string ServiceDestination { get; set; }
-        public string Contract { get; set; }
-        public string MessageType { get; set; }
-        public string QueueOrigin { get; set; }
-        public string QueueDestination { get; set; }
-
-        public SqlQueueParameters(string connectionString, string serviceOrigin, string serviceDestination, string contract, string messageType, string queueOrigin, string queueDestination)
-        {
-            ConnectionString = connectionString;
-            ServiceOrigin = serviceOrigin;
-            ServiceDestination = serviceDestination;
-            Contract = contract;
-            MessageType = messageType;
-            QueueOrigin = queueOrigin;
-            QueueDestination = queueDestination;
         }
     }
 }
