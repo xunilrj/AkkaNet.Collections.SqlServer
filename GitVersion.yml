@@ -1,0 +1,5 @@
+mode: Mainline
+branches:
+  feature: {}
+ignore:
+  sha: []

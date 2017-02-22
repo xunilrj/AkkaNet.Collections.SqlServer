@@ -1,0 +1,11 @@
+source https://nuget.org/api/v2
+
+nuget NuGet.CommandLine
+nuget FAKE
+nuget xunit.runner.console
+nuget ReportGenerator
+nuget OpenCover
+nuget OpenCoverToCoberturaConverter
+nuget GitVersion.CommandLine prerelease
+
+http https://github.com/aktau/github-release/releases/download/v0.6.2/windows-amd64-github-release.zip
