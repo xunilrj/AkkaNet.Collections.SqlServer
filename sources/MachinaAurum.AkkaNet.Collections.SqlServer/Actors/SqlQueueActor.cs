@@ -73,7 +73,11 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
                         {
                             myref.Tell(Kill.Instance);
                         }
+
+                        break;
                     }
+
+                    await Task.Delay(1000);
                 }
             });
 
