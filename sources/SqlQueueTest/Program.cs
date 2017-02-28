@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Akka.Configuration;
 using MachinaAurum.AkkaNet.Collections.SqlServer.Actors;
 using MachinaAurum.Collections.SqlServer;
 using System;
@@ -9,12 +10,10 @@ namespace SqlQueueTest
     {
         static void Main(string[] args)
         {
-            var system = ActorSystem.Create("QueueSystem");
+            var config = ConfigurationFactory.ParseString("akka{loglevel=DEBUG}");
+            var system = ActorSystem.Create("QueueSystem", config);
 
-            var consoleActor = system.ActorOf<ConsoleActor>();
-
-            var parameters = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN", "SERVICEDESTINATION", "CONTRACT", "MESSAGETYPE", "QUEUEORIGIN", "QUEUEDESTINATION", "QUEUEBAGGAGE");
-            var queueActor = system.ActorOf(SqlQueueActor.Props(parameters, consoleActor));
+            var consoleActor = system.ActorOf<ConsoleActor>("io");
 
             system.WhenTerminated.Wait();
         }
@@ -28,6 +27,20 @@ namespace SqlQueueTest
             {
                 Console.WriteLine(x.ToString());
             });
+
+            var parameters = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN", "SERVICEDESTINATION", "CONTRACT", "MESSAGETYPE", "QUEUEORIGIN", "QUEUEDESTINATION", "QUEUEBAGGAGE");
+            var queueActor = Context.ActorOf(SqlQueueActor.Props(parameters, Self), "sqlqueue");
+        }
+
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(maxNrOfRetries: 10,
+                withinTimeMilliseconds: 60 * 1000,
+                decider: Decider.From(x =>
+                {
+                    return Directive.Restart;
+                }),
+                loggingEnabled: true);
         }
     }
 
