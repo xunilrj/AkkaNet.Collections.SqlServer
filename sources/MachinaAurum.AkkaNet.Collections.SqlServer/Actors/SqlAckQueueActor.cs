@@ -13,7 +13,7 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
     {
         public static Akka.Actor.Props Props(SqlQueueParameters parameters, IActorRef target = null)
         {
-            return Akka.Actor.Props.Create<SqlQueueActor>(parameters, target);
+            return Akka.Actor.Props.Create<SqlAckQueueActor>(parameters, target);
         }
 
         private readonly ILoggingAdapter Log = Logging.GetLogger(Context);
@@ -95,7 +95,7 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
                             myref.Tell(Kill.Instance);
                         }
 
-                        break; 
+                        break;
                     }
 
                     await Task.Delay(1000);
