@@ -60,8 +60,7 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
                             int index = 0;
                             queue.DequeueGroup<Guid>(dic, x => (x as dynamic).Id, x =>
                             {
-                                Log.Debug("SqlAckQueueActor sending message {Index}...", index);
-                                index++;
+                                Log.Debug("SqlAckQueueActor sending message {Index}. Waiting ack...", index);
 
                                 Sync.Reset();
 
@@ -77,6 +76,8 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
                                 {
                                     Log.Debug("SqlAckQueueActor ack {Index} received", index);
                                 }
+
+                                index++;
                             });
 
                             Log.Debug("SqlAckQueueActor All Messages Sent.");
@@ -107,6 +108,7 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
 
         private void WaitMessage()
         {
+            Log.Debug("SqlAckQueueActor became WaitMessage");
             ReceiveAny(x =>
             {
                 Become(WaitAck);
@@ -116,6 +118,7 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
 
         private void WaitAck()
         {
+            Log.Debug("SqlAckQueueActor became WaitAck");
             ReceiveAny(x =>
             {
                 Become(WaitMessage);
