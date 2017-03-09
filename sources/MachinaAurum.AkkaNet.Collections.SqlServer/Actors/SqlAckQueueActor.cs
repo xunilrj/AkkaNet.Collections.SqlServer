@@ -110,10 +110,12 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
 
             Receive<SqlQueueAck>(x =>
             {
+                Log.Debug("SqlAckQueueActor ack received");
                 Sync.Set();
             });
             ReceiveAny(x =>
             {
+                Log.Debug("SqlAckQueueActor telling {Target}", Target.Path);
                 Target.Tell(x);
             });
         }
