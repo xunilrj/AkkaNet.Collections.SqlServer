@@ -50,7 +50,9 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
                 {
                     try
                     {
+                        Log.Debug("SqlAckQueueActor Resolving {Path}", mypath);
                         myref = await system.ActorSelection(mypath).ResolveOne(TimeSpan.FromSeconds(1));
+                        Log.Debug("SqlAckQueueActor found {Ref}", myref);
 
                         var dic = new SqlNoMemoryDictionary<Guid, QueuItemEnvelope>();
                         dic.Prepare(parameters.ConnectionString, parameters.BaggageTable.Replace("Baggage", "Status"), "Id", "Status");
