@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
 {
+    public class SqlQueueAck
+    {
+
+    }
+
     public class SqlAckQueueActor : ReceiveActor
     {
         public static Akka.Actor.Props Props(SqlQueueParameters parameters, IActorRef target = null)
@@ -103,26 +108,13 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
                 }
             });
 
-            Become(WaitMessage);
-        }
-
-        private void WaitMessage()
-        {
-            Log.Debug("SqlAckQueueActor became WaitMessage");
-            ReceiveAny(x =>
+            Receive<SqlQueueAck>(x =>
             {
-                Become(WaitAck);
-                Target.Tell(x);
-            });
-        }
-
-        private void WaitAck()
-        {
-            Log.Debug("SqlAckQueueActor became WaitAck");
-            ReceiveAny(x =>
-            {
-                Become(WaitMessage);
                 Sync.Set();
+            });
+            ReceiveAny(x =>
+            {
+                Target.Tell(x);
             });
         }
     }
