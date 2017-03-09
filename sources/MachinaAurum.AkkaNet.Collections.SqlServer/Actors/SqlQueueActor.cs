@@ -53,10 +53,7 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
 
                             Log.Debug("SqlQueueActor Received {0}.", items.Length);
 
-                            foreach (var item in items)
-                            {
-                                myref.Tell(item);
-                            }
+                            myref.Tell(items);
 
                             Log.Debug("SqlQueueActor All Messages Sent.");
                         }

@@ -50,10 +50,6 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
                 {
                     try
                     {
-                        Log.Debug("SqlAckQueueActor Resolving {Path}", mypath);
-                        myref = await system.ActorSelection(mypath).ResolveOne(TimeSpan.FromSeconds(1));
-                        Log.Debug("SqlAckQueueActor found {Ref}", myref);
-
                         var dic = new SqlNoMemoryDictionary<Guid, QueuItemEnvelope>();
                         dic.Prepare(parameters.ConnectionString, parameters.BaggageTable.Replace("Baggage", "Status"), "Id", "Status");
 
@@ -62,12 +58,16 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
 
                         while (true)
                         {
+                            Log.Debug("SqlAckQueueActor Resolving {0}", mypath);
+                            myref = await system.ActorSelection(mypath).ResolveOne(TimeSpan.FromSeconds(1));
+                            Log.Debug("SqlAckQueueActor found {0}", myref);
+
                             Log.Debug("SqlAckQueueActor Waiting Message...");
 
                             int index = 0;
                             queue.DequeueGroup<Guid>(dic, x => (x as dynamic).Id, x =>
                             {
-                                Log.Debug("SqlAckQueueActor sending message {Index}. Waiting ack...", index);
+                                Log.Debug("SqlAckQueueActor sending message {0}. Waiting ack...", index);
 
                                 Sync.Reset();
 
@@ -76,12 +76,12 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
                                 var result = Sync.WaitOne(60 * 1000);
                                 if (result == false)
                                 {
-                                    Log.Error("SqlAckQueueActor ack timeout. Message {Index}", index);
+                                    Log.Error("SqlAckQueueActor ack timeout. Message {0}", index);
                                     throw new TimeoutException("SqlAckQueueActor ack timeout.");
                                 }
                                 else
                                 {
-                                    Log.Debug("SqlAckQueueActor ack {Index} received", index);
+                                    Log.Debug("SqlAckQueueActor ack {0} received", index);
                                 }
 
                                 index++;
@@ -117,7 +117,7 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
             });
             ReceiveAny(x =>
             {
-                Log.Debug("SqlAckQueueActor telling {Target}", Target.Path);
+                Log.Debug("SqlAckQueueActor telling {0}", Target.Path);
                 Target.Tell(x);
             });
         }

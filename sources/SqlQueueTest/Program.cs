@@ -14,8 +14,42 @@ namespace SqlQueueTest
             var system = ActorSystem.Create("QueueSystem", config);
 
             var consoleActor = system.ActorOf<ConsoleActor>("io");
+            var actor = system.ActorOf<EnqueuerActor>();
 
             system.WhenTerminated.Wait();
+        }
+    }
+
+    public class EnqueuerActor : ReceiveActor
+    {
+        public EnqueuerActor()
+        {
+            Context.System.Scheduler.ScheduleTellRepeatedly(5000, 5000, Self, 1, ActorRefs.NoSender);
+
+            var parameters1 = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN1", "SERVICEDESTINATION1", "CONTRACT1", "MESSAGETYPE1", "QUEUEORIGIN1", "QUEUEDESTINATION1", "QUEUEBAGGAGE1");
+            var parameters2 = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN2", "SERVICEDESTINATION2", "CONTRACT2", "MESSAGETYPE2", "QUEUEORIGIN2", "QUEUEDESTINATION2", "QUEUEBAGGAGE2");
+
+            var queue1 = new SqlQueue(parameters1);
+            queue1.Clear();
+            var queue2 = new SqlQueue(parameters2);
+            queue2.Clear();
+
+            int i = 0;
+            ReceiveAny(x =>
+            {
+                if (i % 2 == 0)
+                {
+                    Console.WriteLine("Enqueuing 0");
+                    queue1.Enqueue(new MessageDto());
+                }
+                else
+                {
+                    Console.WriteLine("Enqueuing 1");
+                    queue2.Enqueue(new MessageDto());
+                }
+
+                i++;
+            });
         }
     }
 
@@ -25,11 +59,15 @@ namespace SqlQueueTest
         {
             ReceiveAny(x =>
             {
-                Console.WriteLine(x.ToString());
+                Console.WriteLine("Message Received");
+                Sender.Tell(new SqlQueueAck());
             });
 
-            var parameters = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN", "SERVICEDESTINATION", "CONTRACT", "MESSAGETYPE", "QUEUEORIGIN", "QUEUEDESTINATION", "QUEUEBAGGAGE");
-            var queueActor = Context.ActorOf(SqlQueueActor.Props(parameters, Self), "sqlqueue");
+            var parameters1 = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN1", "SERVICEDESTINATION1", "CONTRACT1", "MESSAGETYPE1", "QUEUEORIGIN1", "QUEUEDESTINATION1", "QUEUEBaggage1");
+            var queueActor1 = Context.ActorOf(SqlAckQueueActor.Props(parameters1, Self), "sqlqueue1");
+
+            var parameters2 = new SqlQueueParameters("data source=.;initial catalog=KeyValueDB;user id=sa;password=12345678a", "SERVICEORIGIN2", "SERVICEDESTINATION2", "CONTRACT2", "MESSAGETYPE2", "QUEUEORIGIN2", "QUEUEDESTINATION2", "QUEUEBaggage2");
+            var queueActor2 = Context.ActorOf(SqlAckQueueActor.Props(parameters2, Self), "sqlqueue2");
         }
 
         protected override SupervisorStrategy SupervisorStrategy()
@@ -41,6 +79,17 @@ namespace SqlQueueTest
                     return Directive.Restart;
                 }),
                 loggingEnabled: true);
+        }
+    }
+
+    [Serializable]
+    public class MessageDto
+    {
+        public Guid Id { get; set; }
+
+        public MessageDto()
+        {
+            Id = Guid.NewGuid();
         }
     }
 
