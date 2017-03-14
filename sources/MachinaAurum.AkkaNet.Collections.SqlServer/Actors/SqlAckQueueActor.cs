@@ -92,7 +92,12 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
                     }
                     catch (SqlException e) when (e.Number == -2)
                     {
-                        Log.Debug("SqlAckQueueActor No Message yet. Starting Again");
+                        Log.Debug("SqlAckQueueActor No Message yet. Starting Again...");
+                    }
+                    catch (SqlException e) when (e.Number == 9617)
+                    {
+                        Log.Warning("SqlAckQueueActor Queue disabled. Will wait some time and start again.");
+                        await Task.Delay(60 * 1000);
                     }
                     catch (Exception e)
                     {
