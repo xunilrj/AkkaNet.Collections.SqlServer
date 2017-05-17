@@ -4,6 +4,7 @@ using MachinaAurum.Collections.SqlServer;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
@@ -54,8 +55,11 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
                             Log.Debug("SqlQueueActor Received {0}.", items.Length);
 
                             myref.Tell(items);
+                            Console.WriteLine($"SqlQueueActor.ThreadID {Thread.CurrentThread.ManagedThreadId}");
 
                             Log.Debug("SqlQueueActor All Messages Sent.");
+
+                            await Task.Yield();
                         }
                     }
                     catch (SqlException e) when (e.Number == -2)
@@ -85,6 +89,7 @@ namespace MachinaAurum.AkkaNet.Collections.SqlServer.Actors
 
             ReceiveAny(x =>
             {
+                Console.WriteLine($"ReceiveAny.ThreadID {Thread.CurrentThread.ManagedThreadId}");
                 Target.Tell(x);
             });
         }
